@@ -20,7 +20,7 @@ jobs:
       - run: scope catalog plan --file catalog.yaml --format json > plan.json
 ```
 
-The job's `environment` decides the token's subject: the job above carries `sub` `repo:org/repo:environment:production`, while a job with no environment carries a ref-shaped subject such as `repo:org/repo:ref:refs/heads/main`. The OpenID Connect trust policy in the Console must match the subject the job actually gets.
+The job's `environment` shapes the token's `sub` claim. The OpenID Connect trust policy in the Console must match the subject the job actually gets.
 
 ## Inputs
 
@@ -32,10 +32,10 @@ The job's `environment` decides the token's subject: the job above carries `sub`
 ## Requirements
 
 - The job or workflow must grant `permissions: id-token: write`; without it GitHub exposes no token endpoint and the step fails.
-- A workspace owner must create an OpenID Connect trust policy in the ScopeDB Console whose subject matches the token's `sub` claim, for example `repo:org/repo:environment:production`. Jobs whose subject matches no policy are rejected.
+- A workspace owner must create an OpenID Connect trust policy in the ScopeDB Console whose subject matches the token's `sub` claim. Jobs whose subject matches no policy are rejected.
 
 ## Notes
 
 - The token is masked before it is exported and is never written to disk by the action or the CLI.
 - Each `scope` invocation exchanges the token for a short-lived workspace credential; nothing is persisted between steps.
-- Outside GitHub Actions, export `SCOPEDB_OIDC_TOKEN` (or `SCOPEDB_OIDC_TOKEN_FILE`) and `SCOPEDB_WORKSPACE_ID` directly; this action only bridges GitHub's token endpoint.
+- Outside GitHub Actions, export `SCOPEDB_OIDC_TOKEN` and `SCOPEDB_WORKSPACE_ID` directly; this action only bridges GitHub's token endpoint.
